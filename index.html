@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>社媒运营工作台</title>
-  <meta name="description" content="从近期内容、下一步建议到帖子复盘，管理 NIPLUX 与 Glow Edit 的社媒运营">
+  <meta name="description" content="查看五组社媒账号的帖子表现、运营建议与每周内容计划">
   <style>
 
     :root{color-scheme:dark;--ink:#edf0fa;--muted:#979fb7;--line:#292d40;--bg:#0c0e16;--panel:#141722;--green:#68d8c3;--soft:#1a2c30;--amber:#f3c76f;--purple:#ac94ff;--cyan:#60d9ef;--side:238px}
@@ -28,27 +28,332 @@
     .advice-panel{border:1px solid #514066;background:linear-gradient(125deg,#211b30,#131c27);border-radius:12px;padding:19px 20px;margin-bottom:22px}.advice-heading{display:flex;align-items:center;justify-content:space-between;gap:16px}.advice-label{font-size:10px;color:var(--purple)}.advice-heading h3{font-size:18px;line-height:1.5;margin:4px 0 0}.advice-heading .action{flex:none}.advice-summary{font-size:12px;color:#ced2e3;line-height:1.9;margin:10px 0 5px}.advice-status,.advice-limitation{font-size:10px;color:var(--muted);line-height:1.8;margin:6px 0}.advice-limitation{margin:13px 0 0}.advice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:15px;align-items:start}.advice-task{background:#111621;border:1px solid #343247;border-radius:9px;padding:15px;min-width:0}.advice-task-top{display:flex;justify-content:space-between;gap:12px;align-items:center;font-size:10px;color:var(--purple)}.advice-task-top small{font-size:9px;color:var(--muted)}.advice-task h4{font-size:13px;line-height:1.7;margin:9px 0}.advice-why{font-size:11px;color:#b9c2d8;line-height:1.9;margin:0 0 10px}.advice-delivery{padding:10px;border-radius:6px;background:#1b2331;font-size:11px;line-height:1.8}.advice-task details{font-size:11px;line-height:1.9}.advice-task summary{color:var(--purple);padding-top:4px}.advice-task ol{padding-left:18px;color:#d0d7e8}.advice-task li{margin:7px 0}.advice-task h5{font-size:11px;color:var(--cyan);margin:13px 0 5px}.advice-task pre{white-space:pre-wrap;overflow-wrap:anywhere;font:11px/1.9 "Segoe UI","Microsoft YaHei",sans-serif;color:#c9d1e5;margin:5px 0}.advice-proof{padding:10px;border:1px solid #2e394c;border-radius:6px;background:#0e1520}.advice-proof pre{font-size:10px;color:var(--muted)}.advice-proof a{font-size:10px;color:var(--cyan);margin-right:12px}.advice-task details>p{color:#bcc7db}
     @media(max-width:1100px){.advice-grid{grid-template-columns:1fr}.advice-heading{align-items:flex-start}.advice-task{padding:15px}.advice-why{font-size:12px}}
     @media(max-width:640px){.advice-panel{padding:15px}.advice-heading{flex-direction:column;gap:10px}.advice-heading h3{font-size:16px}.advice-heading .action{width:100%}.advice-summary{font-size:11px}}
-  </style>
+  /* Social Command — shared visual language for all workspace views. */
+:root {
+  --bg: #0a0b0d;
+  --panel: #131416;
+  --surface-2: #1a1c1f;
+  --surface-3: #212428;
+  --line: #24272c;
+  --line-strong: #353a41;
+  --ink: #eef0f2;
+  --muted: #a0a5ae;
+  --lime: #e6ff57;
+  --green: #85dfa8;
+  --amber: #ffbd87;
+  --purple: var(--lime);
+  --cyan: #a6cef8;
+  --soft: var(--surface-2);
+  --side: 0px;
+  --page-inset: clamp(16px, 3.2vw, 32px);
+  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+body {
+  background: var(--bg);
+  font: 14px/1.6 "Segoe UI", "Microsoft YaHei", "PingFang HK", system-ui, sans-serif;
+}
+::selection { background: #dae991; color: #13150c; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible { outline-color: var(--lime); }
+
+.top {
+  position: sticky; top: 0; inset-inline: auto; height: auto; display: block; padding: 0;
+  background: #0a0b0df5; backdrop-filter: blur(12px); border-color: var(--line);
+}
+.top-inner, .command-nav, .shell {
+  width: 100%; max-width: 1280px; margin-inline: auto; padding-inline: var(--page-inset);
+}
+.top-inner {
+  min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 22px;
+}
+.brand { gap: 11px; min-width: 0; }
+.brand h1 { font-size: 17px; font-weight: 680; line-height: 1.25; letter-spacing: -.025em; }
+.brand-emblem {
+  width: 38px; height: 34px; border-radius: 10px; display: inline-flex; flex: none;
+  align-items: center; justify-content: center; gap: 1px; padding: 5px; background: var(--lime); color: #10120a;
+}
+.brand-emblem svg { max-width: 100%; min-width: 0; max-height: 24px; }
+.brand-emblem svg:nth-last-child(2), .brand-emblem svg:nth-child(2) { width: 14px; }
+.top-right { gap: 15px; flex: none; }
+.top-right .workspace-chip, .top-right #workspace-count { display: none; }
+.updated { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.updated strong { color: var(--green); font-size: 11px; font-weight: 580; }
+.updated span { font: 11px var(--mono); }
+.account-picker {
+  height: 35px; width: clamp(122px, 16vw, 190px); background: var(--surface-2);
+  color: var(--ink); border: 1px solid var(--line-strong); border-radius: 9px;
+  padding: 0 9px; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.command-nav {
+  display: flex; align-items: center; gap: 5px; overflow-x: auto;
+  padding-block: 11px; border-bottom: 1px solid var(--line); scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.command-nav a { flex: none; padding: 8px 14px; gap: 7px; border-radius: 9px; color: var(--muted); }
+.command-nav a:hover { background: var(--surface-2); color: var(--ink); }
+.command-nav a[aria-current=page] {
+  background: #23281a; color: var(--lime); border-color: #394024;
+}
+.command-nav .icon { width: 15px; height: 15px; }
+.command-nav .nav-copy { font-size: 13px; white-space: nowrap; }
+.command-nav .nav-arrow, .breadcrumb { display: none; }
+.shell { margin-block: 0; padding-block: 29px 64px; background: transparent; }
+.context-panel { display: block; padding: 0; background: none; border: 0; border-radius: 0; margin-bottom: 23px; }
+.context-panel:has(.context-controls[hidden]) { margin-bottom: 24px; }
+.context-row { display: flex; justify-content: space-between; align-items: center; gap: 24px; }
+.context-row .view-heading { display: grid; justify-content: start; gap: 4px; margin: 0; min-width: 0; }
+.context-row .view-heading h2 {
+  font-size: 14px; font-weight: 620; line-height: 1.4; letter-spacing: .015em; color: var(--muted);
+}
+.context-row .view-heading h3 {
+  font-size: clamp(28px, 3.2vw, 43px); font-weight: 710; letter-spacing: -.045em; line-height: 1.2;
+  margin: 0; overflow-wrap: anywhere;
+}
+.context-row .view-heading p { font-size: 13px; color: var(--muted); line-height: 1.6; margin: 2px 0 0; }
+.identity-pair { display: flex; align-items: stretch; gap: 9px; min-width: 0; }
+.identity {
+  display: flex; align-items: center; gap: 10px; min-width: 0; padding: 11px 15px;
+  border: 1px solid var(--line); border-radius: 14px; background: var(--panel);
+}
+.identity > div { display: grid; min-width: 0; gap: 3px; }
+.identity small { font: 11px/1.2 var(--mono); color: var(--muted); }
+.identity b { font-weight: 600; font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+.platform-symbol {
+  display: grid; place-items: center; flex: none; width: 32px; height: 32px;
+  border-radius: 50%; color: white; font-size: 20px; line-height: 1; font-weight: 750;
+}
+.identity.facebook .platform-symbol { background: #1877f2; }
+.identity.instagram .platform-symbol { background: linear-gradient(145deg,#f38352,#cc3d87); }
+.context-toolbar {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 18px;
+  border-block: 1px solid var(--line); padding-block: 11px; margin-top: 23px;
+}
+.context-toolbar:has(.context-controls[hidden]) { display: none; }
+.context-controls { flex-wrap: wrap; gap: 9px 15px; margin: 0; }
+.context-toolbar .scope-note { flex: 0 1 auto; margin: 0; padding: 0; color: var(--muted); font-size: 11px; border: 0; }
+.platforms { background: var(--panel); border-color: var(--line); border-radius: 9px; }
+.platforms button { font-size: 12px; padding: 5px 10px; color: var(--muted); border-radius: 6px; }
+.platforms button[aria-pressed=true] { background: var(--lime); color: #171a0b; }
+.period-control { font-size: 12px; }
+.period-control select { height: 33px; }
+
+.section { margin-top: 22px; }
+.section-head { margin-bottom: 13px; }
+.section-head h3, .analysis-card h4 { font-size: 16px; font-weight: 660; letter-spacing: -.025em; }
+.section-head h3:before { content: none; }
+.section-head p, .analysis-card>p, .chart-note, .footer, .data-notes p { font-size: 12px; }
+.section-head .section-tag { font: 11px var(--mono); color: var(--muted); letter-spacing: 0; }
+.card-link, .help-link { color: var(--lime); font-size: 12px; }
+.metrics-section { margin-bottom: 18px; }
+.metrics-section>.section-head { margin-bottom: 9px; }
+.metrics-section>.section-head h3 { color: var(--muted); font-size: 12px; font-weight: 530; }
+.kpis { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.kpi:nth-child(n) {
+  background: radial-gradient(130px 88px at 103% 0%,#e6ff5712,transparent 90%),var(--panel);
+  border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px;
+}
+.kpi .label { font-size: 12px; color: #bfc3ca; }
+.kpi:nth-child(n) .label .icon { color: #929786; }
+.kpi .value {
+  margin: 9px 0 7px; font: 700 clamp(28px,2.6vw,37px)/1.12 "Segoe UI",system-ui,sans-serif;
+  font-variant-numeric: tabular-nums; letter-spacing: -.055em; color: var(--ink);
+}
+.change { color: var(--lime); font-size: 11px; }
+.change.down { color: #ffa3a3; }
+.change.neutral, .detail { color: var(--muted); }
+.detail { font-size: 11px; line-height: 1.4; }
+.partial { color: var(--amber); }
+
+.command-grid { display: grid; grid-template-columns: minmax(0,1.72fr) minmax(0,.9fr); gap: 16px; }
+.analysis-card, .panel, .rank-card, .competitor-card, .guide-step, .rank-details,
+.filterbar, .plan-card, .plan-settings, .plan-assets, .advice-panel { border-radius: 18px; background: var(--panel); border-color: var(--line); }
+.analysis-card, .rank-card, .competitor-card { padding: 20px; }
+.chart-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.chart-head h3, .priority-card h3 { font-size: 17px; letter-spacing: -.035em; margin: 0; line-height: 1.45; }
+.chart-key { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 11px; }
+.chart-key span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.chart-key i { width: 7px; height: 7px; display: inline-block; border-radius: 50%; }
+#home-trend { display: block; height: auto; min-width: 0; padding: 12px 0 0; background: none; }
+.publish-chart { width: 100%; height: auto; max-height: 255px; overflow: visible; }
+.publish-chart text { font-family: var(--mono); }
+.chart-panel .chart-note { margin: 5px 0 0; color: var(--muted); line-height: 1.6; }
+.priority-card {
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;
+  position: relative; isolation: isolate; overflow: hidden; min-width: 0;
+  background: var(--lime); color: #15170d; padding: 22px; border-radius: 18px;
+}
+.priority-card::after {
+  content:"";position:absolute;z-index:-1;right:-36px;top:-48px;width:145px;height:145px;
+  border-radius:50%;background:#252b0d12;pointer-events:none;
+}
+.priority-card small { color: #454c23; font-size: 12px; font-weight: 620; }
+.priority-card h3 { margin: 12px 0 6px; font-size: clamp(20px,1.8vw,26px); line-height: 1.35; }
+.priority-card p { color: #30351b; font-size: 13px; margin: 2px 0 20px; line-height: 1.65; }
+.priority-card a, .priority-card .action {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: auto;
+  background: #141510; border: 1px solid #141510; border-radius: 9px; padding: 8px 13px;
+  color: var(--lime); font-size: 12px; font-weight: 650; text-decoration: none;
+}
+.priority-card a:hover { background: #2c301c; }
+.priority-card a:focus-visible { outline-color: #141510; }
+.diagnosis, .fleet-panel { margin-top: 18px; min-width: 0; }
+.matrix { grid-template-columns: repeat(5,minmax(0,1fr)); gap: 9px; }
+.matrix-card { background: var(--surface-2); border-color: var(--line); border-radius: 13px; padding: 13px; }
+.matrix-card:hover { border-color: #61665a; transform: none; }
+.matrix-card[aria-pressed=true] { border-color: #69723c; background: #1c2017; box-shadow: none; }
+.matrix-head { gap: 7px; }
+.matrix-head .account-avatar { color: #e0e5c5; background: #30332a; border-radius: 8px; }
+.matrix-head b { font-size: 12px; }
+.matrix-head small, .matrix-foot { color: var(--muted); font-size: 10px; }
+.matrix-foot { flex-wrap: wrap; }
+.matrix-stats div { background: #131513; border-color: var(--line); }
+.matrix-stats strong { font-size: 19px; }
+.matrix-stats span { color: var(--muted); font-size: 10px; }
+
+.table-wrap { width: 100%; max-width: 100%; scrollbar-color: var(--line-strong) var(--panel); }
+th { background: var(--surface-2); color: var(--muted); font-size: 11px; }
+td { font-size: 13px; }
+th, td { padding: 14px 15px; border-color: var(--line); }
+tbody tr:hover { background: #1b1d1f; }
+.metric strong { color: var(--ink); }
+.metric small, .post-meta, .pair-note { color: var(--muted); font-size: 11px; }
+.platform { background: #1b2737; border-color: #34475f; color: #a4cdff; font-size: 10px; }
+.platform.instagram { background: #30222d; border-color: #493441; color: #f5bdd8; }
+.diagnosis .section-head { margin-bottom: 16px; }
+.recent-table { min-width: 620px; font-variant-numeric: tabular-nums; }
+.recent-table a { color: var(--ink); text-decoration: none; }
+.recent-table a:hover { color: var(--lime); }
+.recent-table .recent-meta, .recent-table .recent-title { font-size: 12px; }
+
+select, input, textarea { background: #101113; border-color: var(--line-strong); font-size: 13px; }
+input::placeholder,textarea::placeholder { color: #90959e; }
+input[type=checkbox],input[type=radio] { accent-color: var(--lime); }
+.action { background: var(--lime); border-color: var(--lime); color: #14170a; font-size: 12px; }
+.action.secondary { background: var(--surface-2); border-color: var(--line-strong); color: var(--ink); }
+.filter label, .filter input, .filter select, .scope-note { font-size: 12px; }
+.post-filters .scope-note { border-color: var(--line); }
+.metric-help, .plan-intro, .plan-proof, .advice-delivery, .advice-proof, .plan-card-settings {
+  background: var(--surface-2); border-color: var(--line-strong); color: #c1c6ce;
+}
+.plan-intro p { color: var(--muted); font-size: 12px; }
+.legend { color: var(--muted); font-size: 11px; }
+.legend i, .bar { background: #80a4b5; }
+.legend i.posts, .bar.posts, .fill { background: #c8d77b; }
+.trend { background: repeating-linear-gradient(to top,transparent,transparent 39px,var(--line) 40px,transparent 41px); }
+.trend-label, .compare-meta, .tag-row .compare-meta { font-size: 11px; color: var(--muted); }
+.track { background: var(--surface-3); }
+.compare-row.active { color: var(--lime); }
+.compare-row.active .fill { background: var(--lime); }
+.heat-cell { border-color: var(--line-strong); }
+.mix-row, .compare-row, .tag-row { font-size: 12px; }
+.rank-card:first-child, .competitor-card.owned { border-color: #4b5132; background: var(--panel); }
+.advice-panel { padding: 20px; }
+.advice-task { background: var(--surface-2); border-color: var(--line); border-radius: 13px; }
+.advice-task h4 { font-size: 15px; }
+.advice-heading h3 { font-size: 20px; }
+.advice-summary, .advice-why, .advice-task ol, .advice-task details>p, .advice-task pre { color: #c9cdd3; font-size: 13px; }
+.advice-status, .advice-limitation, .advice-proof pre { color: var(--muted); font-size: 11px; }
+.plan-field>span, .plan-field input, .plan-field textarea, .plan-field select { font-size: 13px; }
+.plan-products label { border-color: var(--line-strong); font-size: 12px; }
+.plan-products label:has(input:checked) { border-color: #68743c; background: #23281a; }
+.plan-products input { accent-color: var(--lime); }
+.plan-card-number { background: #252b1c; color: var(--lime); border-color: #424831; }
+.plan-card[open]>summary { background: var(--surface-2); }
+.plan-proof, .plan-assets pre, .insight span, .guide-step p, .guide-facts p, .data-notes p { font-size: 12px; }
+.plan-copy textarea { min-height: 235px; }
+.footer { padding-top: 10px; }
+
+@media (max-width:1100px) {
+  .context-row { align-items: flex-start; }
+  .identity { padding: 9px 10px; }
+  .identity b { font-size: 12px; }
+  .matrix { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:800px) {
+  .shell { padding-top: 22px; }
+  .context-row { flex-direction: column; gap: 14px; }
+  .identity-pair { flex-wrap: wrap; }
+  .command-grid { grid-template-columns: minmax(0,1.4fr) minmax(0,.9fr); gap: 12px; }
+  .priority-card { padding: 17px; }
+  .kpi:nth-child(n) { padding: 14px; }
+}
+@media (max-width:640px) {
+  :root { --page-inset: 13px; }
+  .top { position: relative; }
+  .top-inner { flex-wrap: wrap; gap: 7px 15px; padding-block: 9px; min-height: 61px; }
+  .brand { gap: 7px; }
+  .brand h1 { font-size: 15px; }
+  .brand-emblem { width: 32px; height: 31px; }
+  .top-right { flex: 1 0 100%; flex-direction: row-reverse; justify-content: space-between; }
+  .updated { display: flex; align-items: center; gap: 6px; }
+  .updated strong, .updated span { font-size: 10px; }
+  .account-picker { width: min(45vw,170px); height: 32px; }
+  .command-nav { gap: 3px; padding-block: 7px; }
+  .command-nav a { padding: 7px 9px; }
+  .command-nav .nav-copy { font-size: 12px; }
+  .context-panel { margin-bottom: 13px; }
+  .context-row .view-heading h3 { font-size: 30px; }
+  .identity-pair { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; width: 100%; }
+  .identity { gap: 7px; padding: 8px; border-radius: 11px; }
+  .platform-symbol { width: 25px; height: 25px; font-size: 17px; }
+  .identity small { font-size: 10px; }
+  .identity b { font-size: 11px; }
+  .context-toolbar { margin-top: 14px; padding-block: 9px; }
+  .context-controls { width: 100%; justify-content: flex-start; gap: 5px 9px; margin: 0; }
+  .platforms button, .period-control select { font-size: 11px; }
+  .platforms button { padding-inline: 7px; }
+  .period-control { font-size: 0; gap: 0; }
+  .period-control select { padding-inline: 4px; }
+  .kpis { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .kpi:nth-child(n) { border-radius: 14px; padding: 12px; }
+  .kpi .value { font-size: 29px; }
+  .kpi .label { font-size: 11px; }
+  .kpi .detail { font-size: 10px; }
+  .command-grid { grid-template-columns: minmax(0,1fr); gap: 10px; }
+  .analysis-card, .rank-card, .competitor-card, .advice-panel { padding: 15px; border-radius: 15px; }
+  .priority-card { border-radius: 15px; }
+  .priority-card h3 { margin-top: 7px; }
+  .priority-card p { margin-bottom: 12px; }
+  .chart-key { gap: 7px; }
+  .chart-head h3, .section-head h3 { font-size: 15px; }
+  .matrix { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+  .matrix-card { padding: 10px; }
+  .matrix-stats { margin-block: 9px; }
+  .matrix-stats div { padding: 5px; }
+  .mix-row,.compare-row { grid-template-columns: minmax(66px,1fr) minmax(20px,1fr); }
+  .mix-row .compare-meta, .compare-row .compare-meta { grid-column: 1/-1; white-space: normal; }
+  .filterbar { padding: 12px; }
+  .filter, .tools, .plan-toolbar, .chart-panel, .diagnosis, .fleet-panel { min-width: 0; }
+  .post-filters .filter:nth-child(2) { flex-basis: 100%; min-width: 0; }
+  .filter input { max-width: 100%; }
+  th,td { padding: 11px 10px; }
+  .plan-products label { min-width: min(130px,100%); }
+  .plan-settings, .plan-assets { padding: 12px; }
+  .content, .view, .section { min-width: 0; }
+}
+    .brand-emblem{background:transparent;width:48px;padding:0}.brand-emblem svg{max-height:none}.chart-key i{height:0;border-radius:0}.chart-head p{font:11px/1.4 var(--mono);color:var(--muted);margin:4px 0 0}.recent-table .post-meta{display:block}.review-stage{font-size:11px;white-space:nowrap;color:var(--muted)}.recent-table td:first-child{width:46%}.recent-table .post-link{display:block;max-width:42ch;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.recent-table td.metric{font-family:var(--mono)} .command-nav a[aria-current=page] .nav-copy{color:inherit}
+
+  .priority-card h3{text-wrap:balance}.publish-chart text{font-size:9px}.command-nav a:focus-visible{outline-offset:-2px}
+@media(max-width:640px){
+  .publish-chart text{font-size:12px}
+  #content:has(#overview:not([hidden])){display:flex;flex-direction:column}
+  #overview:not([hidden]),#overview:not([hidden]) .command-grid{display:contents}
+  #overview .priority-card{order:1;margin-bottom:14px}
+  #content:has(#overview:not([hidden])) .metrics-section{order:2}
+  #overview .chart-panel{order:3}
+  #overview .diagnosis{order:4}
+  #overview .fleet-panel{order:5}
+  #content:has(#overview:not([hidden])) .footer{order:6}
+}
+</style>
 </head>
 <body>
 <a class="skip-link" href="#view-title">跳至工作区</a>
-<header class="top"><div class="brand"><div class="mark" aria-hidden="true">社</div><div><h1>社媒运营工作台</h1></div></div><div class="top-right"><span class="workspace-chip" id="workspace-count">账号工作空间</span><div class="updated" aria-live="polite"><strong id="health">正在载入数据</strong><span id="updated">—</span></div></div></header>
-<aside class="sidebar" aria-label="工作空间导航">
-  <p class="sidebar-caption">工作空间</p>
-  <nav class="workspace-nav" aria-label="工作台模块"><a href="#overview" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="nav-copy">运营总览</span><span class="nav-arrow" aria-hidden="true">›</span></a><a href="#weekly-plan"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h2m4 0h2m-8 3h2"/></svg><span class="nav-copy">内容计划</span><span class="nav-arrow" aria-hidden="true">›</span></a><a href="#post-detail"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8m-8 4h8m-8 4h5"/></svg><span class="nav-copy">帖子复盘</span><span class="nav-arrow" aria-hidden="true">›</span></a><a href="#content-analysis"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M7 15V9m5 6V5m5 10v-4"/></svg><span class="nav-copy">内容分析</span><span class="nav-arrow" aria-hidden="true">›</span></a><a href="#competitor-section"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m14.5 14.5 6 6m-13-10 2 2 3-4"/></svg><span class="nav-copy">竞品观察</span><span class="nav-arrow" aria-hidden="true">›</span></a><a href="#operations"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.01"/></svg><span class="nav-copy">数据说明</span><span class="nav-arrow" aria-hidden="true">›</span></a></nav>
-  <p class="sidebar-caption account-caption">账号空间</p>
-  <nav id="brands" class="brands" aria-label="选择品牌"></nav>
-  <div class="sidebar-foot"><strong>Facebook + Instagram</strong>每日采集 08:00 · 快照数据</div>
-</aside>
+<header class="top"><div class="top-inner"><div class="brand"><span class="brand-emblem" aria-hidden="true"><svg viewBox="0 0 48 32" width="48" height="32"><circle cx="15" cy="16" r="14" fill="#24272c"/><path fill="#eef0f2" d="M14 25v-8h-2.5v-3H14v-2c0-3.1 1.7-4.7 4.5-4.7h2.2v3h-1.5c-1.2 0-1.7.5-1.7 1.7v2h3l-.5 3h-2.5v8z"/><circle cx="33" cy="16" r="14" fill="#e6ff57" stroke="#0a0b0d" stroke-width="2"/><g stroke="#131416" fill="none" stroke-width="1.6"><rect x="26.5" y="9.5" width="13" height="13" rx="4"/><circle cx="33" cy="16" r="3.1"/></g><circle cx="37.1" cy="12.2" r="1" fill="#131416"/></svg></span><h1>NIPLUX 社媒工作台</h1></div><div class="top-right"><div class="updated" aria-live="polite"><strong id="health">正在载入数据</strong><span id="updated">—</span></div><label class="visually-hidden" id="workspace-count" for="brands">选择账号</label><select id="brands" class="account-picker" aria-label="切换账号"></select></div></div></header><nav class="workspace-nav command-nav" aria-label="工作台模块"><a href="#overview" aria-current="page"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="nav-copy">运营总览</span></a><a href="#weekly-plan"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h2m4 0h2m-8 3h2"/></svg><span class="nav-copy">内容计划</span></a><a href="#post-detail"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8m-8 4h8m-8 4h5"/></svg><span class="nav-copy">帖子复盘</span></a><a href="#content-analysis"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16M7 15V9m5 6V5m5 10v-4"/></svg><span class="nav-copy">内容分析</span></a><a href="#competitor-section"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m14.5 14.5 6 6m-13-10 2 2 3-4"/></svg><span class="nav-copy">竞品观察</span></a><a href="#operations"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.01"/></svg><span class="nav-copy">数据说明</span></a></nav>
 <main class="shell">
   <div id="notice" class="notice" role="status" hidden></div>
   <div id="content" hidden>
-    <div class="breadcrumb">工作空间 <span>/</span> <span id="breadcrumb-view">运营总览</span></div>
-    <div class="view-heading"><div><h2 id="view-title" tabindex="-1">运营总览</h2><p id="view-description" class="sub">掌握账号表现，推进下一条内容。</p></div><a class="help-link" href="#operations">数据口径与使用说明 ↗</a></div>
-    <section class="context-panel" aria-label="当前品牌与数据范围">
-      <div class="context-row"><div><h2 id="brand-title"></h2><p id="brand-detail" class="sub"></p></div><div class="context-controls"><div class="platforms" aria-label="选择平台"><button data-platform="all" aria-pressed="true">全部平台</button><button data-platform="facebook" aria-pressed="false">Facebook</button><button data-platform="instagram" aria-pressed="false">Instagram</button></div><label class="period-control" for="period-by">发布时间<select id="period-by"><option value="30">最近 30 天</option><option value="7">最近 7 天</option><option value="90">最近 90 天</option><option value="all">全部已采集</option></select></label></div></div>
-      <p id="scope-note" class="scope-note" aria-live="polite"></p>
-    </section>
+    <span id="breadcrumb-view" hidden></span><section class="context-panel" aria-label="当前账号与数据范围"><div class="context-row"><div class="view-heading"><h2 id="view-title" tabindex="-1">运营总览</h2><h3 id="brand-title"></h3><p id="brand-detail" class="sub"></p><p id="view-description" class="visually-hidden"></p></div><div class="identity-pair" id="identity-pair"></div></div><div class="context-toolbar"><div class="context-controls"><div class="platforms" aria-label="选择平台"><button data-platform="all" aria-pressed="true">全部平台</button><button data-platform="facebook" aria-pressed="false">Facebook</button><button data-platform="instagram" aria-pressed="false">Instagram</button></div><label class="period-control" for="period-by">发布时间<select id="period-by"><option value="30">最近 30 天</option><option value="7">最近 7 天</option><option value="90">最近 90 天</option><option value="all">全部已采集</option></select></label></div><p id="scope-note" class="scope-note" aria-live="polite"></p></div></section>
     <section class="advice-panel" id="advice-panel" aria-labelledby="advice-headline">
       <div class="advice-heading"><div><span class="advice-label">本期运营建议</span><h3 id="advice-headline">正在整理运营任务</h3></div><button type="button" class="action" id="advice-to-plan" disabled>将这3项建议转为内容计划</button></div>
       <p id="advice-summary" class="advice-summary"></p><p id="advice-status" class="advice-status" role="status"></p>
@@ -56,13 +361,7 @@
     </section>
     <section class="metrics-section" id="metrics-section" aria-labelledby="kpi-title"><div class="section-head"><div><h3 id="kpi-title">账号核心表现</h3></div></div><div id="kpis" class="kpis" aria-label="品牌核心指标" aria-live="polite"></div></section>
 
-    <section id="overview" class="view" data-view="overview" aria-label="运营总览">
-      <div class="start-card"><div><h3 id="home-summary"></h3><p id="home-summary-note"></p></div><a class="action" href="#weekly-plan">制作本周内容计划 ↗</a></div>
-      <section class="section" aria-labelledby="matrix-title"><div class="section-head"><div><h3 id="matrix-title">账号表现矩阵<span class="section-tag" id="matrix-count"></span></h3><p>相同平台与发布时间范围 · 点击账号卡片切换工作空间</p></div></div><div id="account-matrix" class="matrix"></div></section>
-      <div class="home-chart-grid"><article class="analysis-card"><div class="section-head"><h3>近四周发布节奏</h3><a class="card-link" href="#content-analysis">完整分析 ↗</a></div><div class="legend"><span><i class="posts"></i>发帖量</span><span><i></i>平均互动</span></div><div id="home-trend" class="trend"></div><p class="chart-note">按帖子的发布时间分周；两种柱各自缩放，柱高不能跨指标比较。</p></article><article class="analysis-card"><div class="section-head"><h3>内容形式分布</h3></div><div id="home-mix"></div><p class="chart-note">条数与累计平均互动 · 仅覆盖当前已采集样本。</p></article></div>
-      <div class="home-grid"><section class="analysis-card" aria-labelledby="recent-title"><div class="section-head"><div><h3 id="recent-title">最近发布</h3></div><a class="card-link" href="#post-detail">全部帖子 ↗</a></div><div id="recent-posts"></div></section><section class="analysis-card" aria-labelledby="actions-title"><div class="section-head"><div><h3 id="actions-title">下一步行动</h3><p>依据当前范围和数据完整性整理</p></div></div><div id="action-list" class="action-list"></div></section></div>
-    </section>
-
+    <section id="overview" class="view" data-view="overview" aria-label="运营总览"><div class="command-grid"><article class="analysis-card chart-panel"><div class="chart-head"><div><h3>每日发帖趋势</h3><p id="chart-window"></p></div><div id="chart-key" class="chart-key" aria-label="图例"></div></div><div id="home-trend"></div><p id="chart-note" class="chart-note"></p></article><article class="priority-card"><small>优先任务</small><h3 id="home-summary"></h3><p id="home-summary-note"></p><a href="#weekly-plan">打开内容计划 <span aria-hidden="true">→</span></a></article></div><section class="analysis-card diagnosis"><div class="section-head"><div><h3>近期帖子复盘</h3><p>按发布时间排列，指标截至本次采集。</p></div><a class="card-link" href="#post-detail">全部帖子 ↗</a></div><div class="table-wrap"><table class="recent-table"><thead><tr><th scope="col">帖子 / 发布时间</th><th scope="col">平台</th><th scope="col">累计浏览</th><th scope="col">累计互动</th><th scope="col">复盘进度</th></tr></thead><tbody id="recent-posts"></tbody></table></div></section><section class="fleet-panel section" aria-labelledby="matrix-title"><div class="section-head"><div><h3 id="matrix-title">账号矩阵 <span class="section-tag" id="matrix-count"></span></h3><p>选择账号查看其帖子和本期任务。</p></div></div><div id="account-matrix" class="matrix"></div></section></section>
     <section id="weekly-plan" class="view" data-view="weekly-plan" aria-label="每周内容计划" hidden>
       <h3 class="plan-summary" id="plan-summary"></h3><nav class="plan-outline" id="plan-outline" aria-label="本周内容安排"></nav>
       <div class="plan-intro"><p id="plan-brand-note"></p></div>
@@ -242,7 +541,7 @@ const WeeklyPlan = (() => {
 const $=s=>document.querySelector(s), valid=v=>typeof v==='number'&&Number.isFinite(v);
 const n=v=>valid(v)?new Intl.NumberFormat('zh-CN').format(v):'—', signed=v=>`${v>0?'+':''}${n(v)}`;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const date=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?'时间未知':d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})};
+const date=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?'时间未知':d.toLocaleString('zh-CN',{timeZone:'Asia/Hong_Kong',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false})};
 const safeLink=v=>{try{const u=new URL(v);return u.protocol==='https:'?u.href:'#'}catch{return '#'}};
 const platforms=['facebook','instagram'], metricNames={views:'浏览',reach:'触达',interactions:'互动'};
 let snapshot, previous, advice=null, historyUnavailable=false, brandKey, platform='all', period='30', mediaType='all', query='';
@@ -253,7 +552,7 @@ function showView(focus=false){
   document.querySelectorAll('.workspace-nav a').forEach(link=>{if(link.hash===`#${view}`)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current')});
   $('#view-title').textContent=viewInfo[view][0];$('#view-description').textContent=viewInfo[view][1];
   $('#breadcrumb-view').textContent=viewInfo[view][0];$('#metrics-section').hidden=['weekly-plan','competitor-section','operations'].includes(view);
-  $('#advice-panel').hidden=!['overview','weekly-plan'].includes(view);
+  $('#advice-panel').hidden=view!=='weekly-plan';
   $('.context-controls').hidden=view==='weekly-plan';$('.footer').hidden=view==='weekly-plan';$('#scope-note').hidden=view==='weekly-plan';
   if(snapshot)render();
   if(focus){$('#view-title').focus({preventScroll:true});globalThis.scrollTo({top:0,behavior:'auto'})}
@@ -374,16 +673,84 @@ function adoptAdvice(){
   const item=currentAdvice();if(!item)return;
   try{WeeklyPlan.useAdvice(item,advice);globalThis.location.hash='#weekly-plan';$('#advice-status').textContent='已转为可编辑的3条计划，向下即可修改与导出；原有版本已保留。';globalThis.setTimeout?.(()=>$('#plan-summary').scrollIntoView?.({block:'start'}),50)}catch(error){$('#advice-status').textContent=error.message}
 }
-function renderHome(a,rows){
-  const recent=ordered(rows,'recent').slice(0,3),missing=rows.filter(p=>!valid(metric(p,'views'))||!valid(metric(p,'interactions'))).length,rivals=(snapshot.competitors||[]).filter(c=>c.forAccountKey===a.accountKey);
-  $('#home-summary').textContent='把本周选题推进到下一条内容';
-  $('#home-summary-note').textContent=accountPlatforms(a).includes('instagram')?'从已准备的3条草稿开始，编辑双平台文案、分镜与素材清单。':'当前仅接入 Facebook，先准备公共主页的文案、分镜与素材清单。';
-  $('#home-trend').innerHTML=$('#trend').innerHTML;$('#home-mix').innerHTML=$('#content-mix').innerHTML;
-  $('#matrix-count').textContent=`${snapshot.accounts.length} 个账号`;
+function renderPublishChart(a, rows) {
+  const days = period === '7' ? 7 : 28;
+  const dayMs = 86400000;
+  const collected = Date.parse(snapshot.collectedAt);
+  // 00:00 in Hong Kong is 16:00 UTC on the preceding date.
+  const hkDay = ms => Math.floor((ms + 8 * 3600000) / dayMs);
+  const start = hkDay(collected) - days + 1;
+  const dayLabel = index => new Date((start + index) * dayMs).toISOString().slice(5, 10).replace('-', '/');
+  const selected = accountPlatforms(a).filter(p => platform === 'all' || p === platform);
+  const available = selected.filter(p => Array.isArray(a[p]?.posts));
+  const counts = Object.fromEntries(available.map(p => [p, Array(days).fill(0)]));
+  for (const post of rows) {
+    const ms = Date.parse(post.publishedAt);
+    const index = hkDay(ms) - start;
+    if (counts[post.platform] && ms <= collected && index >= 0 && index < days) counts[post.platform][index]++;
+  }
+
+  const name = {facebook: 'Facebook', instagram: 'Instagram'};
+  const color = {facebook: '#a8afb7', instagram: '#e6ff57'};
+  const totals = Object.fromEntries(available.map(p => [p, counts[p].reduce((sum, v) => sum + v, 0)]));
+  $('#chart-key').innerHTML = available.map(p => `<span class="chart-key-item" data-series="${p}"><i aria-hidden="true" style="display:inline-block;width:15px;margin-right:5px;border-top:2px ${p === 'facebook' ? 'dashed' : 'solid'} ${color[p]}"></i>${name[p]} · ${n(totals[p])} 条</span>`).join(' ');
+  $('#chart-window').textContent = `${dayLabel(0)} – ${dayLabel(days - 1)}`;
+  const until = new Intl.DateTimeFormat('zh-CN', {timeZone: 'Asia/Hong_Kong', hour: '2-digit', minute: '2-digit', hourCycle: 'h23'}).format(collected);
+  const missing = selected.filter(p => !available.includes(p)).map(p => name[p]);
+  $('#chart-note').textContent = `按香港日期统计已采集帖子，最后一天统计至 ${until}。${missing.length ? missing.join('、') + ' 未返回帖子列表。' : ''}`;
+  const chart = $('#home-trend');
+  if (!available.length || !Object.values(totals).some(Boolean)) {
+    chart.innerHTML = `<div class="empty">${available.length ? '这段时间内没有采集到帖子' : '当前平台没有可用的发帖记录'}</div>`;
+    return;
+  }
+
+  const top = 15, bottom = 132, left = 27, right = 409;
+  const x = i => +(left + (right - left) * i / (days - 1)).toFixed(1);
+  const peak = Math.max(...available.flatMap(p => counts[p]));
+  const step = Math.max(1, Math.ceil(peak / 3));
+  const ceiling = Math.ceil(peak / step) * step;
+  const y = value => +(bottom - (bottom - top) * value / ceiling).toFixed(1);
+  const grid = [];
+  for (let value = 0; value <= ceiling; value += step) {
+    const lineY = y(value);
+    grid.push(`<path d="M${left} ${lineY}H${right}" stroke="#33383e" stroke-dasharray="2 4"/><text x="${left - 8}" y="${lineY + 4}" text-anchor="end">${value}</text>`);
+  }
+  const lines = available.map(p => {
+    const points = counts[p].map((v, i) => `${x(i)},${y(v)}`).join(' ');
+    const fill = p === 'instagram' ? `<polygon points="${left},${bottom} ${points} ${right},${bottom}" fill="url(#publish-chart-glow)"/>` : '';
+    const dash = p === 'facebook' ? ' stroke-dasharray="5 4"' : '';
+    return `${fill}<polyline points="${points}" stroke="${color[p]}" stroke-width="2.25" stroke-linejoin="round" fill="none" vector-effect="non-scaling-stroke"${dash}/><circle cx="${right}" cy="${y(counts[p][days - 1])}" r="3.5" fill="${color[p]}" stroke="#131416" stroke-width="1.25"/>`;
+  }).reverse().join('');
+  const tickIndexes = days === 7 ? [0, 2, 4, 6] : [0, 7, 14, 21, 27];
+  const labels = tickIndexes.map(i => `<text x="${x(i)}" y="154" text-anchor="${i === 0 ? 'start' : i === days - 1 ? 'end' : 'middle'}">${dayLabel(i)}</text>`).join('');
+  const summaries = Array.from({length: days}, (_, i) => `${dayLabel(i)}，${available.map(p => `${name[p]} ${counts[p][i]} 条`).join('，')}`);
+  const hitWidth = (right - left) / (days - 1);
+  const targets = summaries.map((text, i) => `<rect x="${x(i) - hitWidth / 2}" y="${top}" width="${hitWidth}" height="${bottom - top + 3}" fill="transparent"><title>${text}</title></rect>`).join('');
+  chart.innerHTML = `<svg class="publish-chart" role="img" aria-labelledby="publish-chart-title publish-chart-desc" viewBox="0 0 425 162" width="100%" style="display:block"><title id="publish-chart-title">近${days}天每日发帖数（条）</title><desc id="publish-chart-desc">${summaries.join('。')}</desc><defs><linearGradient id="publish-chart-glow" x1="0" y1="0" x2="0" y2="1" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#e6ff57" stop-opacity=".18"/><stop offset="1" stop-color="#e6ff57" stop-opacity=".01"/></linearGradient></defs><g fill="#a7adb7" font-size="13" font-family="ui-monospace,monospace">${grid.join('')}${labels}</g>${lines}${targets}</svg>`;
+}
+function renderHome(a, rows) {
+  const task = currentAdvice()?.tasks[0];
+  $('#home-summary').textContent = task ? task.title.replace(/^优先\s*\d+\s*[｜|：:]\s*/, '') : '本期运营建议待更新';
+  $('#home-summary-note').textContent = task?.deliverable || '可先打开内容计划查看本账号的草稿。';
+  renderPublishChart(a, rows);
+  $('#matrix-count').textContent = `${snapshot.accounts.length} 个账号`;
   $('#account-matrix').innerHTML=snapshot.accounts.map(x=>{const list=filteredPosts(x),total=sum(list.map(p=>metric(p,'interactions')));return `<button class="matrix-card" type="button" data-account="${esc(x.accountKey)}" aria-pressed="${x.accountKey===brandKey}" aria-label="切换到${esc(x.configuredName)}"><div class="matrix-head"><span class="account-avatar" aria-hidden="true">${esc(x.configuredName.slice(0,1).toUpperCase())}</span><span><b title="${esc(x.configuredName)}">${esc(x.configuredName)}</b><small>${esc(accountLabel(x))}</small></span></div><div class="matrix-stats"><div><strong>${n(list.length)}</strong><span>范围内帖子</span></div><div><strong>${n(total.value)}</strong><span>累计互动${total.missing?' · 部分':''}</span></div></div><div class="matrix-foot"><span>${accountPlatforms(x).every(p=>x[p])?'<i aria-hidden="true"></i>'+ (accountPlatforms(x).length===1?'Facebook 已同步':'双平台快照'):'平台资料不完整'}</span><span>FB ${posts(x,'facebook').length}${accountPlatforms(x).includes('instagram')?' / IG '+posts(x,'instagram').length:''}</span></div></button>`}).join('');
-  $('#recent-posts').innerHTML=recent.length?recent.map(p=>`<a class="recent-item" href="${esc(safeLink(p.permalink))}" target="_blank" rel="noopener noreferrer"><div class="recent-meta"><span class="platform ${p.platform}">${p.platform==='facebook'?'Facebook':'Instagram'}</span><span>${date(p.publishedAt)}</span><span>${esc(typeName(p.mediaType||'FACEBOOK_POST'))}</span></div><div class="recent-title">${esc(p.caption||'无文字内容')} ↗</div><div class="recent-stats"><span>累计浏览 <b>${n(metric(p,'views'))}</b></span><span>累计互动 <b>${n(metric(p,'interactions'))}</b></span></div></a>`).join(''):`<div class="empty">${!accountPlatforms(a).includes('instagram')&&!posts(a).length?'本次采集未返回 Facebook 帖子；此处仅展示该公共主页数据。':'当前范围没有帖子。可先在上方调整平台或发布时间。'}</div>`;
-  const brief=currentAdvice(),items=brief?brief.tasks.map((task,i)=>['',`优先 ${i+1}：${task.title}`,task.deliverable,'weekly-plan','查看运营任务与计划']):[['','本次运营建议尚待更新','建议需与本次采集数据匹配；可先查看原帖或手动整理计划。','weekly-plan','打开内容计划']];
-  $('#action-list').innerHTML=items.map(([tone,title,note,target,label])=>`<article class="action-item ${tone}"><strong>${esc(title)}</strong><span>${esc(note)}</span><a href="#${target}">${label} →</a></article>`).join('');
+  const recent = ordered(rows, 'recent').slice(0, 5);
+  $('#recent-posts').innerHTML = recent.map(post => {
+    const ageHours = (Date.parse(snapshot.collectedAt) - Date.parse(post.publishedAt)) / 3600000;
+    const views = metric(post, 'views'), interactions = metric(post, 'interactions');
+    const status = !valid(views) || !valid(interactions) ? '部分指标待补' :
+      ageHours < 24 ? '未满 24 小时' : ageHours < 72 ? '已满 24 小时' : '已满 72 小时';
+    const caption = (post.caption || '').trim().split(/\r?\n/)[0] || '无文字内容';
+    return `<tr><td><a class="post-link" href="${esc(safeLink(post.permalink))}" target="_blank" rel="noopener noreferrer">${esc(caption)}</a><small class="post-meta">${date(post.publishedAt)}</small></td><td><span class="platform ${post.platform}">${post.platform==='facebook'?'Facebook':'Instagram'}</span></td><td class="metric">${n(views)}</td><td class="metric">${n(interactions)}</td><td><span class="review-stage">${status}</span></td></tr>`;
+  }).join('') || '<tr><td colspan="5" class="empty">当前范围没有帖子，可调整平台或发布时间。</td></tr>';
+}
+function renderIdentities(a) {
+  const names = { facebook: 'Facebook', instagram: 'Instagram' };
+  $('#identity-pair').innerHTML = accountPlatforms(a).map(p => {
+    const data = a[p], name = p === 'facebook' ? data?.name : data?.username && '@' + data.username;
+    return `<article class="identity ${p}"><span class="platform-symbol" aria-hidden="true">${p==='facebook'?'f':'◎'}</span><div><small>${names[p]}</small><b>${esc(name || '平台资料未返回')}</b></div></article>`;
+  }).join('');
 }
 function renderCompetitors(a){
   const section=$('#competitor-data'), rivals=(snapshot.competitors||[]).filter(c=>c.forAccountKey===a.accountKey);
@@ -403,7 +770,8 @@ function render(){
   const enabled=accountPlatforms(a);
   if(platform!=='all'&&!enabled.includes(platform))platform='all';
   document.querySelectorAll('[data-platform]').forEach(b=>{b.disabled=b.dataset.platform!=='all'&&!enabled.includes(b.dataset.platform);b.setAttribute('aria-pressed',String(b.dataset.platform===platform))});
-  document.querySelectorAll('[data-brand]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.brand===brandKey)));
+  $('#brands').value=brandKey;
+  renderIdentities(a);
   $('#brand-title').textContent=a.configuredName;syncMediaTypes(a);
   const rows=filteredPosts(a),old=matchingPrevious(a),oldRows=filteredPosts(old),selected=enabled.filter(p=>platform==='all'||p===platform);
   $('#brand-detail').textContent=enabled.includes('instagram')?`${a.instagram?.username?'@'+a.instagram.username+' · ':''}Facebook ${posts(a,'facebook').length} 条 / Instagram ${posts(a,'instagram').length} 条`:`Facebook 公共主页 · ${posts(a,'facebook').length} 条 · Instagram 未接入`;
@@ -441,11 +809,11 @@ async function load(){
     try{const h=await fetch('./data/previous.json',{cache:'no-store'});if(!h.ok)throw Error();previous=await h.json();if(previous&&(!Array.isArray(previous.accounts)||!(new Date(previous.collectedAt)<new Date(snapshot.collectedAt))))throw Error()}catch{previous=null;historyUnavailable=true}
     try{const b=await fetch('./data/advice.json',{cache:'no-store'});if(!b.ok)throw Error();advice=validateAdvice(await b.json())}catch{advice=null}
     const issues=[...(snapshot.errors||[]).map(e=>`${e.accountKey}：${e.message}`),...(snapshot.competitorErrors||[]).map(e=>`竞品 ${e.key}：${e.message}`),...snapshot.accounts.flatMap(a=>(a.warnings||[]).map(w=>`${a.configuredName}：${w}`))];
-    $('#health').textContent=issues.length?'采集有异常，请查看提示':snapshot.accounts.length?'数据已更新':'暂无可用账号';$('#updated').textContent=`最近采集 ${date(snapshot.collectedAt)}`;
+    $('#health').textContent=issues.length?'采集有异常，请查看提示':snapshot.accounts.length?'数据已更新':'暂无可用账号';$('#updated').textContent=`香港时间 ${date(snapshot.collectedAt)}`;
     if(issues.length){$('#notice').hidden=false;$('#notice').textContent=issues.join('；')}
     $('#workspace-count').textContent=`${snapshot.accounts.length} 个账号空间`;
-    $('#brands').innerHTML=snapshot.accounts.map(x=>`<button class="brand-tab" data-brand="${esc(x.accountKey)}" aria-pressed="false" title="${esc(x.configuredName)}" aria-label="${esc(x.configuredName)}，${posts(x).length} 条已采集"><span class="account-avatar" aria-hidden="true">${esc(x.configuredName.slice(0,1).toUpperCase())}</span><span class="account-name"><b>${esc(x.configuredName)}</b><small>${esc(accountLabel(x))}</small></span><span class="account-count">${posts(x).length}</span></button>`).join('');
-    document.querySelectorAll('[data-brand]').forEach(b=>b.addEventListener('click',()=>selectBrand(b.dataset.brand)));
+    $('#brands').innerHTML=snapshot.accounts.map(a=>`<option value="${esc(a.accountKey)}" title="${esc(accountLabel(a))}">${esc(a.configuredName)}</option>`).join('');
+    $('#brands').addEventListener('change',event=>selectBrand(event.target.value));
     brandKey=snapshot.accounts[0]?.accountKey;render();
   }catch(e){$('#health').textContent='载入失败';$('#notice').hidden=false;$('#notice').textContent=e.message}
 }
